@@ -1,9 +1,6 @@
-#!/bin/bash
-set -e
-
-clickhouse client -n <<-EOSQL
 CREATE TABLE fromjson (
-   ts DateTime,
+   datedate Date,
+   ts Int64,
    userId Int64,
    sessionId Int64,
    page String,
@@ -21,9 +18,12 @@ CREATE TABLE fromjson (
    artist String,
    song String,
    length Float64
-) ENGINE = MergeTree(ts, user);
+) ENGINE = MergeTree(datedate, userId, 8192);
+
+
 CREATE TABLE aggjson (
-   ts DateTime,
+   datedate Date,
+   ts Int64,
    userId Int64,
    sessionId Int64,
    page String,
@@ -41,10 +41,4 @@ CREATE TABLE aggjson (
    artist String,
    song String,
    length Float64
-) ENGINE = MergeTree(ts, user);
-EOSQL
-
-
-
-
-
+) ENGINE = MergeTree(datedate, userId, 8192);
