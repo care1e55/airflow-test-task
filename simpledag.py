@@ -11,7 +11,7 @@ import re
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2018, 9, 1),
+    'start_date': datetime(2019, 4, 1),
     'email_on_failure': False,
     'email_on_retry': False,
     'schedule_interval': '@daily',
@@ -29,14 +29,18 @@ infile = "event-data-head.json"
 outfile = "testfile.json"
 
 loadcommand = "cat " + jsonpath + outfile + " | docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --input_format_skip_unknown_fields=1 --query=\"INSERT INTO default.fromjson FORMAT JSONEachRow\"  --host clickhouse-server"
+aggregate_command = "docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --query=\"INSERT INTO default.aggjson select * from default.fromjson\"  --host clickhouse-server"
+clean_command = "docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --query=\"truncate table default.fromjson\"  --host clickhouse-server"
 
 
 print(loadcommand)
+
 
 def filterJSON(line):
     re.sub(":([0-9]+?),", ":\"\1\",", line)
     re.sub(":([0-9\.]+?)}", ":\"\1\"}", line)
     return line
+
 
 def prepare_data(ds, **kwargs):
   fi = open(jsonpath+infile,"r",encoding="utf8")
@@ -45,38 +49,46 @@ def prepare_data(ds, **kwargs):
       fo.write(line)
     return "Prepared"
 
-# def load_to_clickhouse(config, ds, **kwargs):
-#     pass
 
-def clean_data(ds, **kwargs):
+def aggreagate(ds, **kwargs):
+    return "Aggreagated"
+
+
+def clean(ds, **kwargs):
     os.remove(jsonpath+outfile)
-    pass
+    os.system(clean_command)
+    return "Cleaned"
 
 
 prepare_data_job = PythonOperator(
   task_id='prepare_data', 
   python_callable=prepare_data, 
-#   op_kwargs = {'config' : config},
   provide_context=True,
   dag=dag
 )
 
-load_to_clickhouse_job = BashOperator(
-  task_id='load_to_clickhouse',
+
+load_job = BashOperator(
+  task_id='load',
   bash_command=loadcommand,
   dag = dag)
 
 
+aggregate_job = BashOperator(
+  task_id='aggregate',
+  bash_command=aggregate_command,
+  dag=dag)
+  
+  
 clean_data_job = PythonOperator(
-  task_id='clean_data', 
-  python_callable=clean_data, 
-#   op_kwargs = {'config' : config},
+  task_id='clean', 
+  python_callable=clean, 
   provide_context=True,
   dag=dag
 )
 
 
-prepare_data_job >> load_to_clickhouse_job >> clean_data_job
+prepare_data_job >> load_job >> aggregate_job >> clean_data_job
 
 
 
