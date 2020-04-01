@@ -56,7 +56,7 @@ def aggreagate(ds, **kwargs):
 
 def clean(ds, **kwargs):
     os.remove(jsonpath+outfile)
-    os.system(clean_command)
+    # os.system(clean_command)
     return "Cleaned"
 
 
@@ -87,8 +87,14 @@ clean_data_job = PythonOperator(
   dag=dag
 )
 
+clean_table_job = BashOperator(
+  task_id='clean_table',
+  bash_command=clean_command,
+  dag=dag)
 
-prepare_data_job >> load_job >> aggregate_job >> clean_data_job
+
+prepare_data_job >> load_job >> aggregate_job >> clean_table_job >> clean_data_job
+
 
 
 
