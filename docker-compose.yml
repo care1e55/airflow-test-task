@@ -7,6 +7,9 @@ services:
       - "8123:8123"
     volumes:
       - ./clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./clickhouse/files:/files
+    networks:
+      - simplenet
   airflow:
     build: 
       context: airflow/
@@ -14,4 +17,10 @@ services:
       - "8080:8080"
     volumes:
       - ./airflow/dags:/usr/local/airflow/dags
-    network_mode: host
+    networks:
+      - simplenet
+
+networks:
+  simplenet:
+    external:
+      name: simplenet

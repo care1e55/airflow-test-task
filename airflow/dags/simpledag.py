@@ -24,13 +24,13 @@ dag = DAG(
   description='Simple DAG',
   default_args=default_args)
 
-jsonpath = "/storage/Study/myCode/airflow-test-task/airflow-test-task/"
+jsonpath = "/files/"
 infile = "event-data-head.json"
 outfile = "testfile.json"
 
-loadcommand = "cat " + jsonpath + outfile + " | docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --input_format_skip_unknown_fields=1 --query=\"INSERT INTO default.fromjson FORMAT JSONEachRow\"  --host clickhouse-server"
-aggregate_command = "docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --query=\"INSERT INTO default.aggjson select * from default.fromjson\"  --host clickhouse-server"
-clean_command = "docker run -i --rm --link my-clickhouse-server:clickhouse-server yandex/clickhouse-client -n clickhouse-client: clickhouse-client --query=\"truncate table default.fromjson\"  --host clickhouse-server"
+loadcommand = "cat " + jsonpath + outfile + " | clickhouse-client --input_format_skip_unknown_fields=1 --query=\"INSERT INTO default.fromjson FORMAT JSONEachRow\"  --host clickhouse"
+aggregate_command = "clickhouse-client --query=\"INSERT INTO default.aggjson select * from default.fromjson\"  --host clickhouse"
+clean_command = "clickhouse-client --query=\"truncate table default.fromjson\"  --host clickhouse"
 
 
 print(loadcommand)
