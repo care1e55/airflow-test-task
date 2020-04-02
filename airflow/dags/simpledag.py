@@ -25,7 +25,7 @@ dag = DAG(
   default_args=default_args)
 
 jsonpath = "/files/"
-infile = "event-data-head.json"
+infile = "event-data.json"
 outfile = "testfile.json"
 
 loadcommand = "cat " + jsonpath + outfile + " | clickhouse-client --input_format_skip_unknown_fields=1 --query=\"INSERT INTO default.fromjson FORMAT JSONEachRow\"  --host clickhouse"
