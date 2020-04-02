@@ -1,55 +1,5 @@
 version: "3"
 services:
-  postgres:
-    image: "postgres:9.6"
-    container_name: "postgres"
-    environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-  initdb:
-    build:
-      context: ./airflow
-    entrypoint: airflow initdb
-    depends_on:
-      - postgres
-  webserver:
-    build: 
-      context: ./airflow
-    volumes:
-      - ./airflow/dags:/usr/local/airflow/dags"
-      - ./airflow/dags:/home"
-    restart: always
-    depends_on:
-      - postgres
-    ports:
-      - "8080:8080"
-    entrypoint: airflow webserver
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
-  scheduler:
-    build: 
-      context: ./airflow
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./airflow/dags:/usr/local/airflow/dags"
-      - ./airflow/dags:/home"
-    depends_on:
-      - postgres
-    entrypoint: airflow scheduler
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-scheduler.pid ]"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
   clickhouse:
     build: 
       context: ./clickhouse
@@ -57,3 +7,11 @@ services:
       - "8123:8123"
     volumes:
       - ./clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  airflow:
+    build: 
+      context: airflow/
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/usr/local/airflow/dags
+    network_mode: host
