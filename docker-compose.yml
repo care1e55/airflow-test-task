@@ -1,0 +1,17 @@
+version: "3"
+services:
+  clickhouse:
+    build: 
+      context: ./clickhouse
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./clickhouse/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  airflow:
+    build: 
+      context: airflow/
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/usr/local/airflow/dags
+      - ./airflow/files:/files
