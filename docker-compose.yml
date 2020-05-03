@@ -15,3 +15,4 @@ services:
     volumes:
       - ./airflow/dags:/usr/local/airflow/dags
       - ./airflow/files:/files
+      - ./airflow/plugins:/usr/local/airflow/plugins
