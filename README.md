@@ -4,5 +4,5 @@ TODO:
  - use hooks
  - clickhouse aggregate operator with templating
  - load config and sql templating
- - spark for agregting
+ - add spark container for aggregating
 
