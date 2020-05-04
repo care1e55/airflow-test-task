@@ -6,7 +6,7 @@ import re
 
 class JsonToClickhouseOperator(BaseOperator):
 
-    template_fields = ['host', 'schema', 'table', 'filepath', 'jsonname']
+    # template_fields = ['host', 'schema', 'table', 'filepath', 'jsonname']
 
     @apply_defaults
     def __init__(self, *args, **kwargs):
