@@ -1,3 +1,8 @@
 *.json
 *.zip
 *.out
+.idea/*
+.ipynb_checkpoints/*
+*.ipynb
+*.pyc
+__pycache__/*

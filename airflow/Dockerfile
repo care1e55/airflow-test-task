@@ -11,4 +11,5 @@ apt-get install -y --allow-unauthenticated clickhouse-client
 RUN groupadd --gid 999 docker \
     && usermod -aG docker airflow
 RUN chmod -R 777 /usr/local/airflow
+RUN pip install clickhouse-sqlalchemy
 USER airflow
