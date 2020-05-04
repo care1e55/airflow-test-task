@@ -18,11 +18,11 @@ class JsonToClickhouseOperator(BaseOperator):
         return line
 
     def execute(self, context):
-        uri = 'clickhouse://default:@clickhouse:8123'
+        uri = 'clickhouse://{}:@{}:8123'.format(self.params["schema"], self.params["host"])
         engine = create_engine(uri)
 
-        with open("/files/event-data-head.json", "r") as fi:
+        with open("{}/{}".format(self.params["filepath"], self.params["jsonname"]), "r") as fi:
             for line in map(self.filterJSON, fi.readlines()):
-                sql = r'INSERT INTO default.fromjson  FORMAT JSONEachRow ' + line
+                sql = r'INSERT INTO {}.{} FORMAT JSONEachRow '.format(self.params["schema"], self.params["table"]) + line
                 engine.execute(sql)
 
