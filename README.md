@@ -1,5 +1,11 @@
 # airflow-test-task
-data engineer airflow with clickhouse example
+Test task for Data engineer.
+
+Airflow ETL-pipeline form file to Clickhouse. 
+Solution provided as docker-compose.
+DAG:
+Load json from mounted volume -> clean and prepare for parsing -> parse and load to clickhouse -> drop log table 
+
 TODO:
  - [ ] use hooks
  - [ ] clickhouse aggregate operator with templating
